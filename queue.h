@@ -1,4 +1,7 @@
-/* Una implementación de cola mediante una lista ligada */
+/* double_linked_queue.h */
+#ifndef DOUBLE_LINKED_QUEUE_H
+#define DOUBLE_LINKED_QUEUE_H
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,28 +9,32 @@
 #define    EMPTY    0
 #define    FULL     10000
 
-typedef    unsigned int         data;
-typedef    enum {FALSO, VERDERO}   boolean;
+typedef    unsigned int     data;
+typedef    enum {FALSO, VERDADERO}   boolean;
 
-struct elem {          // Un elemento en la cola.
-    data         d;
-    struct elem  *next;
+struct dl_elem {          
+    data            d;
+    struct dl_elem  *next;  // Apunta al siguiente elemento
+    struct dl_elem  *prev;  // Apunta al elemento anterior (¡Nuevo!)
 };
 
-typedef    struct elem           elem;
-struct queue {
-    int         cnt;                            // Conteo de los elementos de la cola.
-    elem        *head;                          // Apuntador al 'head' de la cola.
-    elem        *tail;                          // Apuntador al 'tail' de la cola.
+typedef    struct dl_elem    dl_elem;
+
+struct dl_queue {
+    int         cnt;                            
+    dl_elem     *head;                          
+    dl_elem     *tail;                          
 };
 
-typedef     struct queue          queue;        // Definimos el tipo de dato cola (queue, se pronuncia "quiu").
+typedef     struct dl_queue  dl_queue;        
 
-/* Operaciones básicas de colas */
-void        initialize(queue *q);               // Inicializar una cola.
-void        enqueue(data d, queue *q);          // Encolar (agregar) un elemento (por tail).
-data        deque(queue *q);                    // Desencolar (quitar) un elemento (por head). Lo que se devuelve es el elemento apuntado por 'head'.
-data        head(const queue *q);               // ¿Cuál es el elemento al inicio de la cola?
-data        tail(const queue *q);               // ¿Cuál es el elemento al final de la cola?
-boolean     empty(const queue *q);              // ¿La cola está vacía?
-boolean     full(const queue *q);               // ¿La cola está llena (10000 elementos)?
+/* Operaciones básicas de colas doblemente ligadas */
+void        dl_initialize(dl_queue *q);               
+void        dl_enqueue(data d, dl_queue *q);          
+data        dl_dequeue(dl_queue *q);                  
+data        dl_head(const dl_queue *q);               
+data        dl_tail(const dl_queue *q);               
+boolean     dl_empty(const dl_queue *q);              
+boolean     dl_full(const dl_queue *q);               
+
+#endif
