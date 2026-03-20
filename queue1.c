@@ -98,3 +98,5 @@ int main(void)
     }
     return 0;
 }
+// De acuerdo von lo que imprime la consola, que esta haciendo el bloque main?//
+//El main toma una lista revuelta de tareas para dos sistemas (A y B), las separa en dos filas ordenadas, y luego atiende primero a toda la fila A y después a toda la fila B.//
