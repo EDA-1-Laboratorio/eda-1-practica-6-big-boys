@@ -1,33 +1,114 @@
-/* Una implementación de cola mediante una lista ligada */
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <assert.h> 
+#include <stdio.h> 
+#include <stdlib.h> 
 
-#define    EMPTY    0
-#define    FULL     10000
+#define    EMPTY    0 
+#define    FULL     10000 
 
-typedef    unsigned int         data;
-typedef    enum {FALSO, VERDERO}   boolean;
+typedef    unsigned int    data; 
+typedef    enum {FALSO, VERDADERO}   boolean; 
 
-struct elem {          // Un elemento en la cola.
-    data         d;
-    struct elem  *next;
-};
+struct dl_elem {           
+    data            d; 
+    struct dl_elem  *next;  
+    struct dl_elem  *prev;  
+}; 
 
-typedef    struct elem           elem;
-struct queue {
-    int         cnt;                            // Conteo de los elementos de la cola.
-    elem        *head;                          // Apuntador al 'head' de la cola.
-    elem        *tail;                          // Apuntador al 'tail' de la cola.
-};
+typedef    struct dl_elem    dl_elem; 
 
-typedef     struct queue          queue;        // Definimos el tipo de dato cola (queue, se pronuncia "quiu").
+struct dl_queue { 
+    int         cnt;                             
+    dl_elem     *head;                           
+    dl_elem     *tail;                           
+}; 
 
-/* Operaciones básicas de colas */
-void        initialize(queue *q);               // Inicializar una cola.
-void        enqueue(data d, queue *q);          // Encolar (agregar) un elemento (por tail).
-data        deque(queue *q);                    // Desencolar (quitar) un elemento (por head). Lo que se devuelve es el elemento apuntado por 'head'.
-data        head(const queue *q);               // ¿Cuál es el elemento al inicio de la cola?
-data        tail(const queue *q);               // ¿Cuál es el elemento al final de la cola?
-boolean     empty(const queue *q);              // ¿La cola está vacía?
-boolean     full(const queue *q);               // ¿La cola está llena (10000 elementos)?
+typedef     struct dl_queue  dl_queue;         
+
+/* --- DEFINICIONES DE FUNCIONES --- */
+
+void dl_initialize(dl_queue *q) {
+    q->cnt = EMPTY;
+    q->head = NULL;
+    q->tail = NULL;
+}
+
+void dl_enqueue(data d, dl_queue *q) {
+    if (q->cnt == FULL) return;
+
+    dl_elem *nuevo = (dl_elem *)malloc(sizeof(dl_elem));
+    nuevo->d = d;
+    nuevo->next = NULL;
+    nuevo->prev = q->tail; // Conecta hacia atrás con el antiguo tail
+
+    if (q->head == NULL) { // Si la cola estaba vacía
+        q->head = nuevo;
+    } else {
+        q->tail->next = nuevo; // El antiguo tail ahora apunta al nuevo
+    }
+    
+    q->tail = nuevo; // El nuevo nodo es ahora el tail
+    q->cnt++;
+}
+
+data dl_dequeue(dl_queue *q) {
+    assert(q->cnt > EMPTY);
+    
+    dl_elem *temp = q->head;
+    data valor = temp->d;
+    
+    q->head = q->head->next; // El segundo pasa a ser el primero
+    
+    if (q->head == NULL) {
+        q->tail = NULL; // La cola quedó vacía
+    } else {
+        q->head->prev = NULL; // El nuevo frente no tiene a nadie atrás
+    }
+    
+    free(temp);
+    q->cnt--;
+    return valor;
+}
+
+data dl_head(const dl_queue *q) {
+    assert(q->cnt > EMPTY);
+    return q->head->d;
+}
+
+data dl_tail(const dl_queue *q) {
+    assert(q->cnt > EMPTY);
+    return q->tail->d;
+}
+
+boolean dl_empty(const dl_queue *q) {
+    return (q->cnt == EMPTY) ? VERDADERO : FALSO;
+}
+
+boolean dl_full(const dl_queue *q) {
+    return (q->cnt == FULL) ? VERDADERO : FALSO;
+}
+
+/* --- FUNCIÓN PRINCIPAL PARA PROBAR EL INPUT --- */
+
+int main() {
+    dl_queue mi_cola;
+    dl_initialize(&mi_cola);
+    
+    char op;
+    data valor;
+
+    // Lee el input: 'a' para enqueue, 'b' para dequeue
+    while (scanf(" %c %u", &op, &valor) != EOF) {
+        if (op == 'a') {
+            dl_enqueue(valor, &mi_cola);
+            printf("Enqueued: %u\n", valor);
+        } else if (op == 'b') {
+            if (!dl_empty(&mi_cola)) {
+                printf("Dequeued: %u\n", dl_dequeue(&mi_cola));
+            } else {
+                printf("Cola vacía, no se puede hacer dequeue de: %u\n", valor);
+            }
+        }
+    }
+
+    return 0;
+}
